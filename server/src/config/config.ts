@@ -1,7 +1,7 @@
 import * as pkg from '../../package.json';
 
 const isTestEnvironment = process.env.NODE_ENV === 'test';
-const PORT = (isTestEnvironment && 8888) || process.env.PORT || 8080;
+const PORT = (isTestEnvironment && 8888) || process.env.APP_PORT || 8080;
 
 export default {
   env: process.env.NODE_ENV || 'development',

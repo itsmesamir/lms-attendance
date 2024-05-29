@@ -1,7 +1,10 @@
-// server/src/controllers/authController.ts
-
 import { Request, Response } from 'express';
-import { login, refreshAccessToken } from '../services/authService';
+import {
+  login,
+  logout,
+  refreshAccessToken,
+  createUser
+} from '../services/authService';
 
 export async function refreshToken(req: Request, res: Response) {
   try {
@@ -29,5 +32,25 @@ export async function loginHandler(req: Request, res: Response) {
   } catch (err) {
     console.error(err);
     res.status(401).json({ error: 'Invalid credentials' });
+  }
+}
+
+export const registerUser = async (req: Request, res: Response) => {
+  try {
+    const userId = await createUser(req.body);
+    res.status(201).json({ userId });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export async function logoutUser(req: Request, res: Response) {
+  const refreshToken = req.body.refreshToken || req.cookies.refreshToken;
+
+  try {
+    await logout(refreshToken);
+    res.status(200).json({ message: 'Logged out successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to logout' });
   }
 }

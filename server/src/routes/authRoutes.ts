@@ -1,9 +1,20 @@
-import express from 'express';
-import { loginHandler, refreshToken } from '../controllers/authController';
+import * as express from 'express';
+import {
+  loginHandler,
+  registerUser,
+  refreshToken,
+  logoutUser
+} from '../controllers/authController';
 import { fetchAll, fetchByEmail, fetchById } from '../controllers/user';
 import { authenticate } from '../middleware/auth';
 
 const router = express.Router();
+
+router.post('/register', registerUser);
+
+router.post('/login', loginHandler);
+
+router.post('/logout', logoutUser);
 
 // authentication routes
 router.use(authenticate);

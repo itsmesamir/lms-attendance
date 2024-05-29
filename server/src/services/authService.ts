@@ -1,9 +1,14 @@
-// server/src/services/authService.ts
-
 import jwt from 'jsonwebtoken';
-import { findByEmail, findById } from '../models/user';
+import {
+  findByEmail,
+  invalidateToken,
+  findByToken,
+  findById,
+  registerUser
+} from '../models/user';
 import { validatePassword } from '../utils/password';
 import { createAccessToken, createRefreshToken } from '../utils/jwt';
+import { User } from '../interfaces/user';
 
 export async function login(
   email: string,
@@ -19,6 +24,32 @@ export async function login(
   const refreshToken = createRefreshToken(user);
 
   return { accessToken, refreshToken };
+}
+
+export async function createUser(userDetails: User): Promise<number> {
+  const { email } = userDetails;
+  const user = await findByEmail(email);
+
+  if (user) {
+    throw new Error('User already exists');
+  }
+
+  const userId = await registerUser(userDetails);
+
+  return userId;
+}
+
+export async function logout(refreshToken: string): Promise<void> {
+  try {
+    const token = await findByToken(refreshToken);
+    if (!token) {
+      throw new Error('Refresh token not found');
+    }
+
+    await invalidateToken(token.id);
+  } catch (error) {
+    throw new Error('Failed to logout');
+  }
 }
 
 export function refreshAccessToken(refreshToken: string): string {

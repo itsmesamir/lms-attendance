@@ -5,7 +5,7 @@ const pathToEnv = __dirname + '/../.env';
 
 config({ path: pathToEnv });
 
-export const knexConfig: Knex.Config = {
+const knexConfig: Knex.Config = {
   client: process.env.DB_CLIENT,
   connection: {
     host: process.env.DB_HOST,
@@ -22,4 +22,4 @@ export const knexConfig: Knex.Config = {
   }
 };
 
-module.exports = knexConfig;
+export default knexConfig;

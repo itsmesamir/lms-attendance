@@ -20,10 +20,10 @@ router.post('/logout', logoutUser);
 router.use(authenticate);
 
 // Login route
-router.post('/login', loginHandler);
+// router.post('/login', loginHandler);
 
 // Refresh token route
-router.post('/token', refreshToken);
+// router.post('/token', refreshToken);
 
 // Fetch user by email route
 router.get('/user/email', fetchByEmail);

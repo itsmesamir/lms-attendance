@@ -27,7 +27,7 @@ export async function loginHandler(req: Request, res: Response) {
   try {
     const { email, password } = req.body;
     const tokens = await login(email, password);
-    res.cookie('jid', tokens.refreshToken, { httpOnly: true });
+    res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true });
     res.json({ accessToken: tokens.accessToken });
   } catch (err) {
     console.error(err);
@@ -45,12 +45,19 @@ export const registerUser = async (req: Request, res: Response) => {
 };
 
 export async function logoutUser(req: Request, res: Response) {
-  const refreshToken = req.body.refreshToken || req.cookies.refreshToken;
-
   try {
-    await logout(refreshToken);
-    res.status(200).json({ message: 'Logged out successfully' });
+    const refreshToken = req?.body?.refreshToken || req?.cookies?.refreshToken;
+
+    if (refreshToken) {
+      await logout(refreshToken);
+    }
   } catch (error) {
-    res.status(500).json({ message: 'Failed to logout' });
+    console.error(error);
+  } finally {
+    res.clearCookie('refreshToken');
+    res.clearCookie('accessToken');
+
+    // res.status(200).json({ message: 'Logged out successfully' });
+    res.redirect('/login');
   }
 }

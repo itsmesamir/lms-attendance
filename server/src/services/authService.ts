@@ -6,7 +6,7 @@ import {
   findById,
   registerUser
 } from '../models/user';
-import { validatePassword } from '../utils/password';
+import { hashPassword, validatePassword } from '../utils/password';
 import { createAccessToken, createRefreshToken } from '../utils/jwt';
 import { User } from '../interfaces/user';
 
@@ -16,8 +16,13 @@ export async function login(
 ): Promise<{ accessToken: string; refreshToken: string }> {
   const user = await findByEmail(email);
 
-  if (!user || !validatePassword(password, user.password)) {
-    throw new Error('Invalid credentials');
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const isValidPassword = await validatePassword(password, user.password);
+  if (!isValidPassword) {
+    throw new Error('Invalid password');
   }
 
   const accessToken = createAccessToken(user);
@@ -33,6 +38,9 @@ export async function createUser(userDetails: User): Promise<number> {
   if (user) {
     throw new Error('User already exists');
   }
+
+  // hash password before saving
+  userDetails.password = await hashPassword(userDetails.password);
 
   const userId = await registerUser(userDetails);
 

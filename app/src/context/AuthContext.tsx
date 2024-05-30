@@ -1,57 +1,31 @@
-import React, { createContext, useState, useEffect } from "react";
-import axios from "../services/http";
+import React, { createContext, useState, useContext } from "react";
 
-interface AuthContextProps {
+interface AuthContextType {
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const AuthContext = createContext<AuthContextProps | undefined>(
-  undefined
-);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+export const useAuthProvider = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  console.log("useAuthProvider", context);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const response = await axios.get("/auth/status");
-        setIsAuthenticated(response.data.isAuthenticated);
-      } catch (error) {
-        setIsAuthenticated(false);
-      }
-    };
-
-    checkAuthStatus();
-  }, []);
-
-  const login = async (email: string, password: string) => {
-    try {
-      await axios.post("/auth/login", { email, password });
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error("Login failed", error);
-    }
-  };
-
-  const logout = async () => {
-    try {
-      await axios.post("/auth/logout");
-      setIsAuthenticated(false);
-    } catch (error) {
-      console.error("Logout failed", error);
-    }
-  };
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export default AuthProvider;
+export default AuthContext;

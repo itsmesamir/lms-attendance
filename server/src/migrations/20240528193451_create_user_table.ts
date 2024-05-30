@@ -14,6 +14,7 @@ export function up(knex: Knex) {
     table.string('firstName').notNullable();
     table.string('lastName').notNullable();
     table.string('email').notNullable().unique();
+    table.string('password').notNullable();
     table.string('gender').notNullable();
     table.string('middleName');
     table.bigInteger('mobilePhone').notNullable();

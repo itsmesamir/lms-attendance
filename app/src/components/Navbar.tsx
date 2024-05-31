@@ -1,18 +1,21 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useAuth from "../hooks/useAuth";
+import { useAuthProvider } from "../context/AuthContext";
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, setIsAuthenticated, loginHandler, logoutHandler } =
+    useAuthProvider();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
+    setIsAuthenticated(false);
+    logoutHandler();
     navigate("/login");
   };
 
   return (
     <nav className="bg-gray-800 p-4">
+      {isAuthenticated.toString()}
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-white text-lg font-semibold">
           <Link to="/">Leave Management System</Link>

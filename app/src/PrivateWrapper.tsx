@@ -1,12 +1,9 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import useAuth from "./hooks/useAuth";
 import { useAuthProvider } from "./context/AuthContext";
 
 const PrivateWrapper = ({ children }: any) => {
-  // const { isAuthenticated } = useAuth();
-  const { isAuthenticated, setIsAuthenticated } = useAuthProvider();
-  console.log(isAuthenticated);
+  const { isAuthenticated } = useAuthProvider();
   const navigate = useNavigate();
 
   useEffect(() => {

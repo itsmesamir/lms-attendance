@@ -9,8 +9,8 @@ import { AuthProvider } from "./context/AuthContext";
 
 const App = () => {
   return (
-    <Router>
-      <AuthProvider>
+    <AuthProvider>
+      <Router>
         <Navbar />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -24,8 +24,8 @@ const App = () => {
             }
           />
         </Routes>
-      </AuthProvider>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 };
 

@@ -7,7 +7,8 @@ import config from "../config";
 import { useEffect } from "react";
 
 const useAuth = () => {
-  const { isAuthenticated, setIsAuthenticated } = useAuthProvider();
+  const { isAuthenticated, loginHandler, logoutHandler } = useAuthProvider();
+
   const navigate = useNavigate();
 
   const login = async (email: string, password: string) => {
@@ -15,7 +16,7 @@ const useAuth = () => {
       const response = await api.post("/login", { email, password });
       Cookies.set("accessToken", response.data.accessToken);
       Cookies.set("refreshToken", response.data.refreshToken);
-      setIsAuthenticated(true);
+      loginHandler();
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
@@ -38,7 +39,7 @@ const useAuth = () => {
       await api.post("/logout");
       Cookies.remove("accessToken");
       Cookies.remove("refreshToken");
-      setIsAuthenticated(false);
+      logoutHandler();
       navigate("/login");
     } catch (error) {
       console.error(error);
@@ -48,10 +49,6 @@ const useAuth = () => {
       console.log("Cookies removed", isAuthenticated);
     }
   };
-
-  useEffect(() => {
-    console.log("isAuthenticateddddd", isAuthenticated);
-  }, [isAuthenticated]);
 
   return { isAuthenticated, login, register, logout };
 };

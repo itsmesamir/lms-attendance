@@ -3,7 +3,6 @@ import * as jwt from 'jsonwebtoken';
 
 export async function seed(knex: Knex): Promise<void> {
   await knex('refresh_tokens').del();
-
   const users = await knex('users').select('id', 'email');
 
   const tokens = users.map((user) => ({
@@ -13,7 +12,6 @@ export async function seed(knex: Knex): Promise<void> {
     created_at: new Date(),
     invalidated_at: null
   }));
-
   await knex('refresh_tokens').insert(tokens);
 }
 

@@ -1,0 +1,155 @@
+import { Knex } from 'knex';
+
+const TABLE_NAME = 'employees';
+
+/**
+ * Seed data for employees.
+ *
+ * @param  {object} knex
+ * @return {Promise}
+ */
+export async function seed(knex: Knex): Promise<void> {
+  await knex(TABLE_NAME).del();
+  await knex(TABLE_NAME).insert([
+    {
+      id: 1,
+      first_name: 'John',
+      last_name: 'Doe',
+      email: 'john.doe@example.com',
+      department_id: 1,
+      designation: 'Software Engineer',
+      address: '123 Main St',
+      contact_info: '123-456-7890',
+      manager_id: null,
+      gender: 'Male',
+      middle_name: '',
+      birthday: '1990-01-01',
+      join_date: '2020-01-01',
+      country_id: 2,
+      timezone: 'UTC',
+      working_shift: 'Day',
+      created_by: 1,
+      updated_by: 1
+    },
+    {
+      id: 2,
+      first_name: 'Jane',
+      last_name: 'Smith',
+      email: 'jane.smith@example.com',
+      department_id: 2,
+      designation: 'Product Manager',
+      address: '456 Elm St',
+      contact_info: '987-654-3210',
+      manager_id: 1,
+      gender: 'Female',
+      middle_name: 'A.',
+      birthday: '1985-02-02',
+      join_date: '2019-03-01',
+      country_id: 2,
+      timezone: 'PST',
+      working_shift: 'Day',
+      created_by: 1,
+      updated_by: 1
+    },
+    {
+      id: 3,
+      first_name: 'Alice',
+      last_name: 'Johnson',
+      email: 'alice.johnson@example.com',
+      department_id: 3,
+      designation: 'HR Specialist',
+      address: '789 Maple St',
+      contact_info: '555-555-5555',
+      manager_id: 2,
+      gender: 'Female',
+      middle_name: '',
+      birthday: '1992-03-03',
+      join_date: '2021-04-01',
+      country_id: 4,
+      timezone: 'EST',
+      working_shift: 'Day',
+      created_by: 1,
+      updated_by: 1
+    },
+    {
+      id: 4,
+      first_name: 'Bob',
+      last_name: 'Brown',
+      email: 'bob.brown@example.com',
+      department_id: 4,
+      designation: 'Accountant',
+      address: '101 Pine St',
+      contact_info: '444-444-4444',
+      manager_id: 3,
+      gender: 'Male',
+      middle_name: '',
+      birthday: '1980-04-04',
+      join_date: '2018-05-01',
+      country_id: 4,
+      timezone: 'CST',
+      working_shift: 'Day',
+      created_by: 1,
+      updated_by: 1
+    },
+    {
+      id: 5,
+      first_name: 'Charlie',
+      last_name: 'Davis',
+      email: 'charlie.davis@example.com',
+      department_id: 5,
+      designation: 'Sales Executive',
+      address: '202 Oak St',
+      contact_info: '333-333-3333',
+      manager_id: 4,
+      gender: 'Male',
+      middle_name: '',
+      birthday: '1995-05-05',
+      join_date: '2022-06-01',
+      country_id: 3,
+      timezone: 'MST',
+      working_shift: 'Day',
+      created_by: 1,
+      updated_by: 1
+    },
+    {
+      id: 6,
+      first_name: 'Dana',
+      last_name: 'Miller',
+      email: 'dana.miller@example.com',
+      department_id: 6,
+      designation: 'Marketing Specialist',
+      address: '303 Birch St',
+      contact_info: '222-222-2222',
+      manager_id: 5,
+      gender: 'Female',
+      middle_name: '',
+      birthday: '1988-06-06',
+      join_date: '2020-07-01',
+      country_id: 2,
+      timezone: 'EST',
+      working_shift: 'Day',
+      created_by: 1,
+      updated_by: 1
+    },
+    {
+      id: 7,
+      first_name: 'Eve',
+      last_name: 'Wilson',
+      email: 'eve.wilson@example.com',
+      department_id: 7,
+      designation: 'Customer Support',
+      address: '404 Cedar St',
+      contact_info: '111-111-1111',
+      manager_id: 6,
+      gender: 'Female',
+      middle_name: '',
+      birthday: '1991-07-07',
+      join_date: '2019-08-01',
+      country_id: 4,
+      timezone: 'PST',
+      working_shift: 'Day',
+      created_by: 1,
+      updated_by: 1
+    }
+  ]);
+}

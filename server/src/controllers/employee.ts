@@ -1,14 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 
 import * as employeeService from '../services/employee';
+import AuthenticatedRequest from '../interfaces/AuthenticatedRequest';
 
 export const createEmployee = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const employee = await employeeService.createEmployee(req.body);
+    const authUser = req.user;
+    const employee = await employeeService.createEmployee(req.body, authUser);
     res.status(201).json(employee);
   } catch (error) {
     next(error);
@@ -22,7 +24,7 @@ export const fetchEmployeeById = async (
 ) => {
   try {
     const employee = await employeeService.fetchEmployeeById(+req.params.id);
-    res.json(employee);
+    res.json({ data: employee });
   } catch (error) {
     next(error);
   }
@@ -35,23 +37,24 @@ export const fetchAllEmployees = async (
 ) => {
   try {
     const employees = await employeeService.fetchAllEmployees(req.query);
-    res.json(employees);
+    res.json({ data: employees });
   } catch (error) {
     next(error);
   }
 };
 
 export const updateEmployee = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const employee = await employeeService.updateEmployee(
       +req.params.id,
-      req.body
+      req.body,
+      req.user
     );
-    res.json(employee);
+    res.json({ data: employee });
   } catch (error) {
     next(error);
   }

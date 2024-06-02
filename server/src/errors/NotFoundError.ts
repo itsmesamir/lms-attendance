@@ -1,4 +1,4 @@
-import BaseError from './baseError';
+import BaseError from './BaseError';
 import HttpStatus from 'http-status-codes';
 
 class NotFoundError extends BaseError {

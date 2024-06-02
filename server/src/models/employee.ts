@@ -13,7 +13,6 @@ class Employee extends BaseModel {
         'employees.first_name',
         'employees.last_name',
         'employees.email',
-        'employees.password',
         'employees.designation',
         'employees.created_at',
         'employees.updated_at',
@@ -30,18 +29,65 @@ class Employee extends BaseModel {
         'managers.last_name as manager:last_name',
         'managers.email as manager:email',
         'managers.designation as manager:designation',
-        'managers.department_id as manager:department:id',
-        'managers.department_name as manager:department:name',
-        'managers.country_id as manager:country:id',
-        'managers.country_name as manager:country:name'
+        'manager_departments.id as manager:department:id',
+        'manager_departments.name as manager:department:name',
+        'manager_countries.id as manager:country:id',
+        'manager_countries.name as manager:country:name'
       )
       .from(this.tableName)
       .leftJoin('departments', 'employees.department_id', 'departments.id')
       .leftJoin('countries', 'employees.country_id', 'countries.id')
-      .leftJoin('employees as managers', 'employees.manager_id', 'managers.id');
+      .leftJoin('employees as managers', 'employees.manager_id', 'managers.id')
+      .leftJoin(
+        'departments as manager_departments',
+        'managers.department_id',
+        'manager_departments.id'
+      )
+      .leftJoin(
+        'countries as manager_countries',
+        'managers.country_id',
+        'manager_countries.id'
+      );
   }
 
-  static getAllEmployees(
+  private static mapToEmployee(employee: any) {
+    return {
+      id: employee.id,
+      first_name: employee.first_name,
+      last_name: employee.last_name,
+      email: employee.email,
+      designation: employee.designation,
+      address: employee.address,
+      contact_info: employee.contact_info,
+      gender: employee.gender,
+      middle_name: employee.middle_name,
+      department: {
+        id: employee['department:id'],
+        name: employee['department:name']
+      },
+      country: {
+        id: employee['country:id'],
+        name: employee['country:name']
+      },
+      manager: {
+        id: employee['manager:id'],
+        first_name: employee['manager:first_name'],
+        last_name: employee['manager:last_name'],
+        email: employee['manager:email'],
+        designation: employee['manager:designation'],
+        department: {
+          id: employee['manager:department:id'],
+          name: employee['manager:department:name']
+        },
+        country: {
+          id: employee['manager:country:id'],
+          name: employee['manager:country:name']
+        }
+      }
+    };
+  }
+
+  static async getAllEmployees(
     filterParams: EmployeeTableFilters,
     trx?: Knex.Transaction
   ) {
@@ -73,26 +119,11 @@ class Employee extends BaseModel {
       query.offset(filterParams.offset);
     }
 
-    return query;
+    return query.then((employees) => employees.map(this.mapToEmployee));
   }
 
   static getEmployeeById(id: number, trx?: Knex.Transaction) {
     return this.baseQuery(trx).where('employees.id', id).first();
-  }
-
-  static getEmployeeByName(employee: any, trx?: Knex.Transaction): any {
-    const query = this.baseQuery(trx);
-
-    query
-      .where(
-        this.queryBuilder().raw(
-          'CONCAT(managers.first_name, managers.last_name)',
-          employee
-        )
-      )
-      .first();
-
-    return query;
   }
 
   static getEmployeeByEmail(email: string, trx?: Knex.Transaction) {

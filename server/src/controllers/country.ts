@@ -1,16 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
 
 import * as countryService from '../services/country';
-
-// controller for create, update, delete, fetch country
+import AuthenticatedRequest from '../interfaces/AuthenticatedRequest';
 
 export const createCountry = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const country = await countryService.createCountry(req.body);
+    const currentUser = req.user;
+    const country = await countryService.createCountry({
+      country: req.body,
+      currentUser
+    });
     res.status(201).json(country);
   } catch (error) {
     next(error);
@@ -24,7 +27,7 @@ export const fetchCountryById = async (
 ) => {
   try {
     const country = await countryService.fetchCountryById(+req.params.id);
-    res.json(country);
+    res.json({ data: country });
   } catch (error) {
     next(error);
   }
@@ -37,7 +40,7 @@ export const fetchAllCountries = async (
 ) => {
   try {
     const countries = await countryService.fetchAllCountries();
-    res.json(countries);
+    res.json({ data: countries });
   } catch (error) {
     next(error);
   }

@@ -1,18 +1,22 @@
-import winston from 'winston';
+import * as winston from 'winston';
 
 // Define the format for logging
-const logFormat = winston.format.printf(({ level, message, timestamp }) => {
-  return `${timestamp} [${level.toUpperCase()}]: ${message}`;
+const logFormat = winston.format.printf((info) => {
+  const formattedNamespace = info.metadata.namespace || '';
+  return `${info.timestamp} [${info.level}] [${formattedNamespace}]: ${info.message}`;
 });
 
-// Create a Winston logger instance
 const logger = winston.createLogger({
-  format: winston.format.combine(winston.format.timestamp(), logFormat),
+  format: winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.metadata({ fillExcept: ['message', 'level', 'timestamp'] }),
+    logFormat
+  ),
   transports: [
-    new winston.transports.Console()
-    // Add other transports if needed, e.g., file transport
-    // new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    // new winston.transports.File({ filename: 'logs/combined.log' }),
+    new winston.transports.Console({
+      format: winston.format.combine(winston.format.colorize()),
+      level: 'info'
+    })
   ]
 });
 
@@ -21,6 +25,16 @@ export const stream = {
   write: (message: string) => {
     logger.info(message.trim());
   }
+};
+
+/**
+ * Creates a child logger with namespace for logging.
+ *
+ * @param {String} namespace
+ * @returns {Object}
+ */
+export const withNameSpace = (namespace: string) => {
+  return logger.child({ namespace });
 };
 
 // Export logger instance

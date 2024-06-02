@@ -7,7 +7,8 @@ import {
 } from '../controllers/authController';
 import { fetchAll, fetchByEmail, fetchById } from '../controllers/user';
 import { authenticate } from '../middleware/auth';
-import employeeRoutes from './employeeRoutes';
+import employeeRoutes from './employee';
+import countryRoutes from './country';
 
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.post('/logout', logoutUser);
 // authentication routes
 router.use(authenticate);
 router.use('/employee', employeeRoutes);
+router.use('/country', countryRoutes);
 
 // Login route
 // router.post('/login', loginHandler);

@@ -2,6 +2,8 @@
 import * as express from 'express';
 import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
+
+import { initializeStore } from './asyncStore';
 const router = express.Router();
 
 import routes from './routes/authRoutes';
@@ -15,6 +17,8 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
+
+app.use(initializeStore);
 
 app.use('/api', routes);
 

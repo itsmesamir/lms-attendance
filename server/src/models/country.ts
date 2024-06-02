@@ -1,36 +1,43 @@
 import { Knex } from 'knex';
 
 import db from '../db';
+import BaseModel from './baseModel';
 
 // crud for country
 
-class Country {
+class Country extends BaseModel {
   static tableName = 'countries';
 
-  static async getAllCountries(): Promise<any> {
-    return db(Country.tableName).select('*');
+  static async getAllCountries(trx?: Knex.Transaction): Promise<any> {
+    return this.queryBuilder(trx).select('*').from(this.tableName);
   }
 
   static async getCountryById(id: number): Promise<any> {
-    return db(Country.tableName).select('*').where('id', id).first();
+    return this.queryBuilder()
+      .select('*')
+      .from(this.tableName)
+      .where('id', id)
+      .first();
   }
 
   static async getCountryByName(name: string): Promise<any> {
-    return db(Country.tableName).select('*').where('name', name).first();
+    return this.queryBuilder()
+      .select('*')
+      .from(this.tableName)
+      .where('name', name)
+      .first();
   }
 
   static async createCountry(data: any, trx?: Knex.Transaction): Promise<any> {
-    return db(Country.tableName as string)
-      .insert(data)
-      .transacting(trx!); // Add the non-null assertion operator (!) to ensure trx is defined
+    return this.queryBuilder(trx).insert(data).into(this.tableName);
   }
 
   static async updateCountry(id: number, data: any): Promise<any> {
-    return db(Country.tableName).where('id', id).update(data);
+    return this.queryBuilder().where('id', id).update(data);
   }
 
   static async deleteCountry(id: number): Promise<any> {
-    return db(Country.tableName).where('id', id).del();
+    return this.queryBuilder().where('id', id).del();
   }
 }
 

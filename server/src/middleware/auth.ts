@@ -5,9 +5,17 @@ import { verifyAccessToken } from '../utils/jwt';
 import { withNameSpace } from '../utils/logger';
 import { addToStore } from '../asyncStore';
 
+import RolePermissionService from '../services/rolePermission';
+import RolePermissionModel from '../models/rolePermission';
+import knex from '../db';
+
+const rolePermissionService = new RolePermissionService(
+  new RolePermissionModel(knex)
+);
+
 const logger = withNameSpace('middleware/auth');
 
-export const authenticate = (
+export const authenticate = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
@@ -29,6 +37,10 @@ export const authenticate = (
     addToStore('user', { id: +decoded.userId });
     addToStore('userToken', token);
 
+    const { permissions = [] } =
+      await rolePermissionService.fetchPermissionsByUserId(+decoded.userId);
+
+    addToStore('userPermission', permissions);
     req.user = decoded as User;
 
     logger.info('User authenticated');

@@ -9,6 +9,10 @@ import { fetchAll, fetchByEmail, fetchById } from '../controllers/user';
 import { authenticate } from '../middleware/auth';
 import employeeRoutes from './employee';
 import countryRoutes from './country';
+import fiscalYearRoutes from './fiscalYear';
+import RolePermissionRoutes from './rolesPermissions';
+import leaveRequestRoutes from './leaveRequest';
+import leaveRequestStatusRoutes from './leaveRequestStatus';
 
 const router = express.Router();
 
@@ -20,8 +24,12 @@ router.post('/logout', logoutUser);
 
 // authentication routes
 router.use(authenticate);
+router.use('/fiscal-year', fiscalYearRoutes);
 router.use('/employee', employeeRoutes);
 router.use('/country', countryRoutes);
+router.use(RolePermissionRoutes);
+router.use('/leave-requests', leaveRequestRoutes);
+router.use('/leave-request-status', leaveRequestStatusRoutes);
 
 // Login route
 // router.post('/login', loginHandler);

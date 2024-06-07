@@ -1,45 +1,60 @@
-import db from '../db.js';
+import RoleModel from '../models/role';
+import { Role } from '../interfaces/role';
 import { withNameSpace } from '../utils/logger';
-import TokenError from '../errors/TokenError';
-import BadRequestError from '../errors/BadRequestError';
-import { getFromStore } from '../asyncStore';
 
-const logger = withNameSpace('services/employee');
+const logger = withNameSpace('services/role');
 
-export const createRole = async (roleData) => {
-  try {
-    const [roleId] = await db('roles').insert(roleData);
-    return await db('roles').where({ id: roleId }).first();
-  } catch (error) {
-    logger.error('Error creating role:', error);
-    throw error;
+class RoleService {
+  constructor(private readonly roleModel: RoleModel) {}
+
+  async createRole(role: Role): Promise<number[]> {
+    logger.info(`Creating role with name: ${role.name}`);
+    try {
+      const createdRole = await this.roleModel.createRole(role);
+      logger.info(`Role with name: ${role.name} created successfully`);
+      return createdRole;
+    } catch (error) {
+      logger.error(`Error creating role with name: ${role.name}`);
+      throw error;
+    }
   }
-};
 
-export const getRoles = async () => {
-  try {
-    return await db('roles').select('*');
-  } catch (error) {
-    logger.error('Error getting roles:', error);
-    throw error;
+  async getRoles(): Promise<Role[]> {
+    logger.info('Fetching all roles');
+    try {
+      const roles = await this.roleModel.getRoles();
+      logger.info('Roles fetched successfully');
+      return roles;
+    } catch (error) {
+      logger.error('Error fetching roles');
+      throw error;
+    }
   }
-};
 
-export const updateRole = async (id, roleData) => {
-  try {
-    await db('roles').where({ id }).update(roleData);
-    return await db('roles').where({ id }).first();
-  } catch (error) {
-    logger.error(`Error updating role with ID ${id}:`, error);
-    throw error;
-  }
-};
+  async updateRole(id: number, role: Partial<Role>): Promise<number> {
+    logger.info(`Updating role with id: ${id}`);
 
-export const deleteRole = async (id) => {
-  try {
-    await db('roles').where({ id }).del();
-  } catch (error) {
-    logger.error(`Error deleting role with ID ${id}:`, error);
-    throw error;
+    try {
+      const updatedRole = await this.roleModel.updateRole(id, role);
+      logger.info(`Role with id: ${id} updated successfully`);
+      return updatedRole;
+    } catch (error) {
+      logger.error(`Error updating role with id: ${id}`);
+      throw error;
+    }
   }
-};
+
+  async deleteRole(id: number): Promise<number> {
+    logger.info(`Deleting role with id: ${id}`);
+    try {
+      const deletedRole = await this.roleModel.deleteRole(id);
+      logger.info(`Role with id: ${id} deleted successfully`);
+      return deletedRole;
+    } catch (error) {
+      logger.error(`Error deleting role with id: ${id}`);
+      throw error;
+    }
+  }
+}
+
+export default RoleService;

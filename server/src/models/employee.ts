@@ -51,37 +51,38 @@ class Employee extends BaseModel {
   }
 
   private static mapToEmployee(employee: any) {
+    console.log(employee);
     return {
       id: employee.id,
-      first_name: employee.first_name,
-      last_name: employee.last_name,
+      firstName: employee.firstName,
+      lastName: employee.lastName,
       email: employee.email,
       designation: employee.designation,
       address: employee.address,
-      contact_info: employee.contact_info,
+      contactInfo: employee.contactInfo,
       gender: employee.gender,
-      middle_name: employee.middle_name,
+      middleName: employee.middleName,
       department: {
-        id: employee['department:id'],
-        name: employee['department:name']
+        id: employee['departmentId'],
+        name: employee['departmentName']
       },
       country: {
-        id: employee['country:id'],
-        name: employee['country:name']
+        id: employee['countryId'],
+        name: employee['countryName']
       },
       manager: {
-        id: employee['manager:id'],
-        first_name: employee['manager:first_name'],
-        last_name: employee['manager:last_name'],
-        email: employee['manager:email'],
-        designation: employee['manager:designation'],
+        id: employee['managerId'],
+        firstName: employee['managerFirstName'],
+        lastName: employee['managerLastName'],
+        email: employee['managerEmail'],
+        designation: employee['managerDesignation'],
         department: {
-          id: employee['manager:department:id'],
-          name: employee['manager:department:name']
+          id: employee['managerDepartmentId'],
+          name: employee['managerDepartmentName']
         },
         country: {
-          id: employee['manager:country:id'],
-          name: employee['manager:country:name']
+          id: employee['managerCountryId'],
+          name: employee['managerCountryName']
         }
       }
     };
@@ -90,7 +91,7 @@ class Employee extends BaseModel {
   static async getAllEmployees(
     filterParams: EmployeeTableFilters,
     trx?: Knex.Transaction
-  ) {
+  ): Promise<Employee> {
     const query = this.baseQuery(trx);
 
     if (filterParams.department) {
@@ -123,7 +124,9 @@ class Employee extends BaseModel {
   }
 
   static getEmployeeById(id: number, trx?: Knex.Transaction) {
-    return this.baseQuery(trx).where('employees.id', id).first();
+    const query = this.baseQuery(trx).where('employees.id', id).first();
+
+    return query.then(this.mapToEmployee);
   }
 
   static getEmployeeByEmail(email: string, trx?: Knex.Transaction) {

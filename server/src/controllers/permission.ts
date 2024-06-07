@@ -1,60 +1,58 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
+import PermissionService from '../services/permission';
+import PermissionModel from '../models/permission';
+import knex from '../db';
 
-import * as permissionService from '../services/permission';
-
-import AuthenticatedRequest from '../interfaces/AuthenticatedRequest';
+const permissionService = new PermissionService(new PermissionModel(knex));
 
 export const createPermission = async (
   req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+  res: Response
+): Promise<void> => {
   try {
-    const permission = await permissionService.createPermission(req.body);
-    res.status(201).json(permission);
+    const permission = req.body;
+    const result = await permissionService.createPermission(permission);
+    res.status(201).json(result);
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
 export const getPermissions = async (
   req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+  res: Response
+): Promise<void> => {
   try {
     const permissions = await permissionService.getPermissions();
-    res.json(permissions);
+    res.status(200).json({ data: permissions });
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
 export const updatePermission = async (
   req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+  res: Response
+): Promise<void> => {
   try {
-    const permission = await permissionService.updatePermission(
-      req.params.id,
-      req.body
-    );
-    res.json(permission);
+    const id = parseInt(req.params.id, 10);
+    const permission = req.body;
+    const result = await permissionService.updatePermission(id, permission);
+    res.status(200).json(result);
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: error.message });
   }
 };
 
 export const deletePermission = async (
   req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+  res: Response
+): Promise<void> => {
   try {
-    await permissionService.deletePermission(req.params.id);
-    res.status(204).send();
+    const id = parseInt(req.params.id, 10);
+    const result = await permissionService.deletePermission(id);
+    res.status(200).json(result);
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: error.message });
   }
 };

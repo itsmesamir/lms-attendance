@@ -1,4 +1,4 @@
-import express from 'express';
+import * as express from 'express';
 import {
   createRole,
   getRoles,
@@ -11,10 +11,16 @@ import {
   updatePermission,
   deletePermission
 } from '../controllers/permission';
-import { assignRole, removeRole } from '../controllers/userRole';
+import {
+  assignRole,
+  removeRole,
+  fetchUserRoles
+} from '../controllers/userRole';
 import {
   assignPermission,
-  removePermission
+  removePermission,
+  fetchRolePermissions,
+  fetchPermissionsByUserId
 } from '../controllers/rolePermission';
 
 const router = express.Router();
@@ -34,9 +40,14 @@ router.delete('/permissions/:id', deletePermission);
 // User role routes
 router.post('/user-roles', assignRole);
 router.delete('/user-roles', removeRole);
+router.get('/user-roles/:employee_id', fetchUserRoles);
 
 // Role permission routes
 router.post('/role-permissions', assignPermission);
 router.delete('/role-permissions', removePermission);
+router.get('/role-permissions/:role_id', fetchRolePermissions);
+
+// Fetch permissions by user ID
+router.get('/user-permissions/:employee_id', fetchPermissionsByUserId);
 
 export default router;

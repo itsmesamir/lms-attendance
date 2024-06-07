@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 
 export interface Country {
+  id?: number;
   name: string;
 }
 

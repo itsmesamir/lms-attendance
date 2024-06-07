@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 
-import * as roleService from '../services/role';
-import AuthenticatedRequest from '../interfaces/AuthenticatedRequest';
+import RoleService from '../services/role';
+import RoleModel from '../models/role';
+import knex from '../db';
+
+const roleService = new RoleService(new RoleModel(knex));
 
 export const createRole = async (
   req: Request,
@@ -23,7 +26,7 @@ export const getRoles = async (
 ) => {
   try {
     const roles = await roleService.getRoles();
-    res.json(roles);
+    res.json({ data: roles });
   } catch (error) {
     next(error);
   }
@@ -35,7 +38,7 @@ export const updateRole = async (
   next: NextFunction
 ) => {
   try {
-    const role = await roleService.updateRole(req.params.id, req.body);
+    const role = await roleService.updateRole(+req.params.id, req.body);
     res.json(role);
   } catch (error) {
     next(error);
@@ -48,7 +51,7 @@ export const deleteRole = async (
   next: NextFunction
 ) => {
   try {
-    await roleService.deleteRole(req.params.id);
+    await roleService.deleteRole(+req.params.id);
     res.status(204).send();
   } catch (error) {
     next(error);

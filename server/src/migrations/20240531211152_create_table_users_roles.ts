@@ -14,7 +14,6 @@ export function up(knex: Knex) {
     table
       .integer('employee_id')
       .unsigned()
-      .unique()
       .references('id')
       .inTable('employees')
       .onDelete('SET NULL');

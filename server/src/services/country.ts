@@ -35,6 +35,14 @@ export const fetchCountryById = async (id: number): Promise<Country> => {
   return country;
 };
 
+export const fetchCountryByName = async (name: string): Promise<any> => {
+  logger.info(`Fetching country with name: ${name}`);
+  const country = await CountryModel.getCountryByName(name);
+
+  logger.info(`Country with name: ${name} fetched successfully`);
+  return country;
+};
+
 export const fetchAllCountries = async (): Promise<Country[]> => {
   logger.info('Fetching all countries');
   const countries = await CountryModel.getAllCountries();

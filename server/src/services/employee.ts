@@ -112,7 +112,7 @@ export const updateEmployee = async (
   return updatedEmployeeDetail;
 };
 
-export const fetchEmployeeById = async (id: number): Promise<Employee> => {
+export const fetchEmployeeById = async (id: number): Promise<any> => {
   logger.info(`Fetching employee with id: ${id}`);
   const employee = await EmployeeModel.getEmployeeById(id);
 
@@ -122,12 +122,10 @@ export const fetchEmployeeById = async (id: number): Promise<Employee> => {
 
 export const fetchAllEmployees = async (
   filterParams: EmployeeTableFilters
-): Promise<any[]> => {
+): Promise<any> => {
   logger.info('Fetching all employees');
 
   const user = getFromStore<{ id: number }>('user');
-
-  console.log('user', user);
 
   const employees = await EmployeeModel.getAllEmployees(filterParams);
 

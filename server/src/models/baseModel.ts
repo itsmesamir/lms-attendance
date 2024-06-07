@@ -1,5 +1,3 @@
-// lets create this as a base model and extend it to other models
-
 import { Knex } from 'knex';
 
 import db from '../db';

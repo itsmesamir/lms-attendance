@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import logger from '../utils/logger';
 import LeaveRequestStatus from '../models/leaveRequestStatus';
 
 class LeaveRequestStatusService {
@@ -10,16 +11,22 @@ class LeaveRequestStatusService {
     leaveRequestStatusBody: any,
     trx?: Knex.Transaction
   ) {
-    const { requestId, status, reason } = leaveRequestStatusBody;
-    let existingStatus = await LeaveRequestStatus.getByRequestId(
-      requestId,
-      trx
-    );
-    if (!existingStatus) {
-      return LeaveRequestStatus.create(requestId, status, reason, trx);
-    } else {
-      return LeaveRequestStatus.update(requestId, status, reason, trx);
-    }
+    logger.info('Updating leave request status');
+    const { leaveRequestId } = leaveRequestStatusBody;
+    // let existingStatus = await LeaveRequestStatus.getByRequestId(
+    //   leaveRequestId,
+    //   trx
+    // );
+
+    // if (!existingStatus) {
+    return LeaveRequestStatus.create(leaveRequestStatusBody, trx);
+    // } else {
+    //   return LeaveRequestStatus.update(
+    //     leaveRequestId,
+    //     leaveRequestStatusBody,
+    //     trx
+    //   );
+    // }
   }
 
   static async deleteLeaveRequestStatus(requestId: number) {

@@ -12,7 +12,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuthProvider = (): AuthContextType => {
   const context = useContext(AuthContext);
 
-  console.log("contexttttt", context);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
@@ -23,7 +22,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   const logoutHandler = () => {
-    console.log("Logged out successfullygggg");
     setIsAuthenticated(false);
   };
 

@@ -45,7 +45,6 @@ const useAuth = () => {
       console.error(error);
       return;
     } finally {
-      console.log("Logged out successfully");
       console.log("Cookies removed", isAuthenticated);
     }
   };

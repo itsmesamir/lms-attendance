@@ -28,7 +28,7 @@ export function up(knex: Knex) {
     table.integer('leave_days').notNullable();
     table.text('reason');
     table
-      .enum('status', ['Requested', 'Approved', 'Rejected'])
+      .enum('status', ['Requested', 'Approved', 'Rejected', 'Cancelled'])
       .notNullable()
       .defaultTo('Requested');
     table

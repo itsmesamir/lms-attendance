@@ -6,7 +6,7 @@ import * as bodyParser from 'body-parser';
 import { initializeStore } from './asyncStore';
 const router = express.Router();
 
-import routes from './routes/authRoutes';
+import routes from './routes/routes';
 
 const app = express();
 

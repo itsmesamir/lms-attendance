@@ -1,17 +1,13 @@
-import express from 'express';
+import * as express from 'express';
 import knex from '../db';
+import * as UserController from '../controllers/user';
+
 import { authenticate } from '../middleware/auth';
 
 const router = express.Router();
 
-router.get('/profile', authenticate, async (req: any, res) => {
-  try {
-    const user = await knex('users').where({ id: req.userId }).first();
-    res.json(user);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
+router.get('/fetch', authenticate, UserController.fetchAll);
+router.get('/fetch/:id', authenticate, UserController.fetchById);
+router.get('/fetch/:email', authenticate, UserController.fetchByEmail);
 
 export default router;

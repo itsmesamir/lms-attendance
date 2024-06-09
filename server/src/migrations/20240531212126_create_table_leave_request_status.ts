@@ -19,7 +19,7 @@ export function up(knex: Knex) {
       .onDelete('SET NULL');
     table.text('reason');
     table
-      .enum('status', ['Requested', 'Approved', 'Rejected'])
+      .enum('status', ['Requested', 'Approved', 'Rejected', 'Cancelled'])
       .notNullable()
       .defaultTo('Requested');
     table.timestamp('created_at').defaultTo(knex.fn.now());

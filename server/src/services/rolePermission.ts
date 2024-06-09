@@ -72,7 +72,6 @@ class RolePermissionService {
     employee_id: number
   ): Promise<UserPermission> {
     const userPermissions = getFromStore<UserPermission[]>('userPermission');
-    console.log('userPermissions', userPermissions);
     this.logger.info(`Fetching permissions for user with id: ${employee_id}`);
 
     const userExists = await EmployeeService.fetchEmployeeById(employee_id);

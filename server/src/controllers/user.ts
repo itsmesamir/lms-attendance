@@ -1,4 +1,3 @@
-// server/src/controllers/userController.ts
 import { RequestHandler } from 'express';
 import {
   findByEmail as findUserByEmail,

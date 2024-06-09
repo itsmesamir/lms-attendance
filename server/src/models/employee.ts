@@ -51,7 +51,6 @@ class Employee extends BaseModel {
   }
 
   private static mapToEmployee(employee: any) {
-    console.log(employee);
     return {
       id: employee.id,
       firstName: employee.firstName,

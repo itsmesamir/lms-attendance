@@ -44,12 +44,17 @@ class LeaveBalanceModel {
     },
     trx?: Knex.Transaction
   ) {
-    return this.query()
-      .transacting(trx!)
+    const query = this.query()
       .where('employee_id', employeeId)
       .andWhere('leave_type_id', leaveTypeId)
       .andWhere('fiscal_year_id', fiscalYearId)
       .first();
+
+    if (trx) {
+      query.transacting(trx);
+    }
+
+    return query;
   }
 
   // update the leave balance, where the user takes some leave the remaining days will be updated
@@ -72,7 +77,7 @@ class LeaveBalanceModel {
       .andWhere('leave_type_id', leaveTypeId)
       .andWhere('fiscal_year_id', fiscalYearId)
       .decrement('remaining_days', leaveDays)
-      .update('updated_at', new Date().toISOString())
+      .update('updated_at', new Date())
       .transacting(trx!);
   }
 }

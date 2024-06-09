@@ -4,8 +4,6 @@
 // // Generate a secure random secret of 32 bytes
 // const secret = crypto.randomBytes(32).toString('hex');
 
-// console.log(secret);
-
 const jwt = require('jsonwebtoken');
 
 // Secret key
@@ -26,11 +24,7 @@ const payload = {
 
 const token =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNDAwIn0sImlhdCI6MTU4NTExNjQzMH0.b-XFiavU0CI_V06xSqnZf2o7n4MGA9ojIn3SEiyHSho';
-console.log({ jwt });
 // Generate a token
 // const token = jwt.sign(payload, secret, { expiresIn: '1h' });
 
 const verify = jwt.verify(token, secret);
-console.log({ verify });
-
-console.log({ token });

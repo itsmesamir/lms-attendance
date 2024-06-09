@@ -11,6 +11,9 @@ import { fetchEmployeeById } from './employee';
 import { getFromStore } from '../asyncStore';
 import { Knex } from 'knex';
 import { updateLeaveBalance } from './leaveBalance';
+import { hasAccessToUpdateLeave } from '../validators/permissions';
+import { validateStatusTransition } from '../validators/leaveStatusValidator';
+import { requiresReason } from '../validators/leaveStatusValidator';
 
 const logger = withNameSpace('services/leaveRequest');
 
@@ -77,9 +80,67 @@ class LeaveRequestService {
   static async updateLeaveRequest(id: number, leaveRequest: any) {
     logger.info(`Updating leave request with id: ${id}`);
 
+    const currentUser = getFromStore<{ id: number }>('user');
+    const userRoles = getFromStore<string[]>('userRoles');
+    const userPermissions = getFromStore<string[]>('userPermission');
+
     try {
-      const updatedLeaveRequest = await LeaveRequest.update(id, leaveRequest);
-      logger.info(`Leave request with id: ${id} updated successfully`);
+      // Fetch the current leave request
+      const existingLeaveRequest = await LeaveRequest.getById(id);
+
+      if (!existingLeaveRequest) {
+        throw new Error('Leave request not found');
+      }
+
+      // Check if the current user has access to update the leave request
+      if (
+        !hasAccessToUpdateLeave(
+          currentUser,
+          userRoles as string[],
+          existingLeaveRequest
+        )
+      ) {
+        throw new Error(
+          'You do not have permission to update this leave request'
+        );
+      }
+
+      // Validate status transitions
+      const currentStatus = existingLeaveRequest.status;
+      const newStatus = leaveRequest.status;
+
+      if (!validateStatusTransition(currentStatus, newStatus)) {
+        throw new Error(
+          `Invalid status transition from ${currentStatus} to ${newStatus}`
+        );
+      }
+
+      // If rejecting, ensure a reason is provided
+      if (requiresReason(newStatus) && !leaveRequest.reason) {
+        throw new Error('Reason is required when rejecting a leave request');
+      }
+
+      const updatedLeaveRequest = await knex.transaction(async (trx) => {
+        // Update the leave request
+        const updatedLeaveRequest = await LeaveRequest.update(
+          id,
+          leaveRequest
+        ).transacting(trx);
+
+        // create a new leave request status
+        await LeaveRequestStatusService.updateLeaveRequestStatus(
+          {
+            leaveRequestId: id,
+            status: newStatus,
+            reason: leaveRequest.reason,
+            createdBy: currentUser?.id
+          },
+          trx
+        );
+        logger.info(`Leave request with id: ${id} updated successfully`);
+        return updatedLeaveRequest;
+      });
+
       return updatedLeaveRequest;
     } catch (error) {
       logger.error(`Error updating leave request with id: ${id}`);
@@ -126,6 +187,8 @@ class LeaveRequestService {
     const { id: currentFiscalYearId } =
       await FiscalYearService.getFiscalYearByCountry(userCountry.name);
 
+    logger.info(`Fiscal year found with id: ${currentFiscalYearId}`);
+
     if (!currentFiscalYearId) {
       logger.error('Fiscal year not found');
       throw new Error('Fiscal year not found');
@@ -137,6 +200,8 @@ class LeaveRequestService {
       leaveTypeId,
       currentFiscalYearId
     );
+
+    logger.info('Leave balance fetched successfully', leaveBalance);
     const leaveDays = this.calculateLeaveDays(startDate, endDate);
 
     if (
@@ -151,9 +216,6 @@ class LeaveRequestService {
     if (await this.checkLeaveExists(+employeeId, startDate, endDate)) {
       throw new Error('Leave for the specified dates already exists');
     }
-    // need to update the leave balance as well after creating the leave request.
-    // also need to populate the data in leave_request_status table.
-    // doing all this in a single transaction.
 
     // starting the transaction
     const newLeaveRequest = await knex.transaction(async (trx) => {
@@ -185,7 +247,7 @@ class LeaveRequestService {
       // Post the leave request status
       await LeaveRequestStatusService.updateLeaveRequestStatus(
         {
-          leaveRequestId: newLeaveRequest.id,
+          leaveRequestId: newLeaveRequestId,
           status: 'Requested',
           createdBy: currentUser?.id
         },
@@ -210,6 +272,7 @@ class LeaveRequestService {
     fiscalYearId: number,
     trx?: Knex.Transaction
   ): Promise<LeaveBalance> {
+    logger.info(`Fetching leave balance for employee with id: ${employeeId}`);
     const leaveBalance = await LeaveBalanceModel.getLeaveBalance(
       { employeeId, leaveTypeId, fiscalYearId },
       trx
@@ -218,6 +281,10 @@ class LeaveRequestService {
     if (!leaveBalance) {
       throw new Error('Leave balance not found');
     }
+
+    logger.info(
+      `Leave balance for employee with id: ${employeeId} fetched successfully`
+    );
 
     return leaveBalance;
   }

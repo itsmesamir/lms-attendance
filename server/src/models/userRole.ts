@@ -12,8 +12,21 @@ class UserRoleModel {
     return this.knex('users_roles').where({ employee_id, role_id }).delete();
   }
 
-  async fetchUserRoles(employee_id: number): Promise<UserRole[]> {
-    return this.knex('users_roles').where({ employee_id }).select('*');
+  async fetchUserRoles(employee_id: number): Promise<any> {
+    const userInfo = await this.knex('employees')
+      .select('id as employee_id', 'first_name', 'last_name', 'email')
+      .where('id', employee_id)
+      .first();
+
+    const roles = await this.knex('users_roles as ur')
+      .select('r.name')
+      .leftJoin('roles as r', 'ur.role_id', 'r.id')
+      .where('ur.employee_id', employee_id);
+
+    return {
+      employee: userInfo,
+      roles: roles.map((role: any) => role.name)
+    };
   }
 }
 

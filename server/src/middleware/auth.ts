@@ -7,7 +7,11 @@ import { addToStore } from '../asyncStore';
 
 import RolePermissionService from '../services/rolePermission';
 import RolePermissionModel from '../models/rolePermission';
+import UserRoleService from '../services/userRole';
+import UserRoleModel from '../models/userRole';
 import knex from '../db';
+
+const userRoleService = new UserRoleService(new UserRoleModel(knex));
 
 const rolePermissionService = new RolePermissionService(
   new RolePermissionModel(knex)
@@ -37,10 +41,13 @@ export const authenticate = async (
     addToStore('user', { id: +decoded.userId });
     addToStore('userToken', token);
 
-    const { permissions = [] } =
+    const { permissions = [], roles = [] } =
       await rolePermissionService.fetchPermissionsByUserId(+decoded.userId);
 
     addToStore('userPermission', permissions);
+
+    addToStore('userRoles', roles);
+
     req.user = decoded as User;
 
     logger.info('User authenticated');

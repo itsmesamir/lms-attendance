@@ -48,11 +48,25 @@ The Leave Management System is a web-based application that facilitates the mana
    Open the .env file and add your variables:
 
 ```bash
-    DB_HOST=localhost
-    DB_USER=root
-    DB_PASS=s1mpl3
+    NODE_ENV=local
+
+    APP_NAME='Lms API'
+    APP_VERSION='1.0.0'
+    APP_PORT='8848'
+    APP_BASE_URL=/api/leave
+
     DB_CLIENT=mysql2
-    JWT_SECRET=your_jwt_secret_here
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+
+    DB_NAME=your_db
+    DB_USER=user
+    DB_PASSWORD=password
+
+    token=your_token_here
+    JWT_SECRET_KEY=
+    JWT_REFRESH_SECRET_KEY=
+
 ```
 
 Replace localhost, root, and s1mpl3 with your actual database host, user, and password.

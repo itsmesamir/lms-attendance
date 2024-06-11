@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .btn-click-animation {
+    @apply transition-transform duration-150 ease-in-out;
+
+    &:active {
+      @apply transform scale-95;
+    }
+  }
+}

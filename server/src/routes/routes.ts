@@ -23,9 +23,7 @@ router.post('/login', loginHandler);
 router.post('/logout', logoutUser);
 
 // authentication routes
-router.use(authenticate);
-router.use('/fiscal-year', fiscalYearRoutes);
-router.use('/user', userRoutes);
+// router.use(authenticate);
 router.use('/employee', employeeRoutes);
 router.use('/country', countryRoutes);
 router.use(RolePermissionRoutes);
